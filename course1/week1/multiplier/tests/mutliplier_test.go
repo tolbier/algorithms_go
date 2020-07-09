@@ -1,16 +1,10 @@
 package tests
 
 import (
-	"bufio"
-	"errors"
-	"fmt"
-	"log"
-	"os"
-	"path/filepath"
-	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tolbier/algorithms_go/lib/testcases"
 
 	"github.com/tolbier/algorithms_go/course1/week1/multiplier"
 )
@@ -49,59 +43,12 @@ func Test_Multiplier_Multiply(t *testing.T) {
 	}
 }
 func Test_Multiplier_Multiply_TestCases(t *testing.T) {
-	inputs, outputs := testcases("testcases")
+	inputs, outputs := testcases.InputsOutputs("testcases")
 	for idx, input := range inputs {
-		inputsTexts := parseTextFile(input)
-		outputsTexts := parseTextFile(outputs[idx])
+		inputsTexts := testcases.ParseTextFile(input)
+		outputsTexts := testcases.ParseTextFile(outputs[idx])
 
 		result := multiplier.Multiply(inputsTexts[0], inputsTexts[1])
 		assert.Equal(t, result, outputsTexts[0])
 	}
-}
-
-func parseTextFile(input string) (res []string) {
-	file, err := os.Open(input)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		res = append(res, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println(scanner.Text())
-		log.Fatal(err)
-	}
-	return
-}
-func testcases(root string) (inputs []string, outputs []string) {
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			output, err := outputFile(path)
-			if err == nil {
-				inputs = append(inputs, path)
-				outputs = append(outputs, output)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	return inputs, outputs
-}
-
-func outputFile(path string) (string, error) {
-	dir := filepath.Dir(path)
-	base := filepath.Base(path)
-	r := regexp.MustCompile(`^input_(.+)$`)
-	submatch := r.FindStringSubmatch(base)
-	if len(submatch) == 2 {
-		return fmt.Sprintf("%s/output_%s", dir, submatch[1]), nil
-	}
-	return "", errors.New("no match input file")
 }

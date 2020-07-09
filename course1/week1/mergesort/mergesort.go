@@ -1,10 +1,12 @@
 package mergesort
 
+import "github.com/tolbier/algorithms_go/lib/arrays"
+
 func Mergesort(numbers []int) []int {
 	if len(numbers) == 1 {
 		return numbers
 	}
-	h1, h2 := splitHalves(numbers)
+	h1, h2 := arrays.SplitHalves(numbers)
 	hs1 := Mergesort(h1)
 	hs2 := Mergesort(h2)
 	return Merge(hs1, hs2)
@@ -25,9 +27,4 @@ func Merge(hs1 []int, hs2 []int) (res []int) {
 		}
 	}
 	return
-}
-func splitHalves(numbers []int) (h1, h2 []int) {
-	n := len(numbers)
-	hn := n / 2
-	return numbers[:hn], numbers[hn:]
 }
