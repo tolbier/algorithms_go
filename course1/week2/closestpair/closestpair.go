@@ -9,7 +9,7 @@ type Point struct {
 	X, Y float64
 }
 
-func (p Point) dist(q Point) float64 {
+func (p *Point) dist(q *Point) float64 {
 	return math.Sqrt(math.Pow(p.X-q.X, 2) + math.Pow(p.Y-q.Y, 2))
 }
 
@@ -17,11 +17,11 @@ func (pp PointPair) dist() float64 {
 	return pp.a.dist(pp.b)
 }
 
-func (pp PointPair) is(pp2 PointPair) bool {
-	return (pp.a == pp2.a && pp.b == pp2.b) || (pp.a == pp2.b && pp.b == pp2.a)
+func (pp PointPair) is(p1, p2 Point) bool {
+	return (*pp.a == p1 && *pp.b == p2) || (*pp.a == p2 && *pp.b == p2)
 }
 
-type Grid []Point
+type Grid []*Point
 type SortedGrid Grid
 type GridSort struct {
 	g    Grid
@@ -30,18 +30,17 @@ type GridSort struct {
 
 func (gs GridSort) Len() int           { return len(gs.g) }
 func (gs GridSort) Swap(i, j int)      { gs.g[i], gs.g[j] = gs.g[j], gs.g[i] }
-func (gs GridSort) Less(i, j int) bool { return gs.less(gs.g[i], gs.g[j]) }
+func (gs GridSort) Less(i, j int) bool { return gs.less(*gs.g[i], *gs.g[j]) }
 
 func X(i, j Point) bool { return i.X < j.X }
 func Y(i, j Point) bool { return i.Y < j.Y }
 
 type PointPair struct {
-	a, b Point
+	a, b *Point
 }
 
 func (g Grid) ClosestPair() PointPair {
-	return g.SortBy(X).ClosestPair()
-
+	return ClosestPair(g.SortBy(X), g.SortBy(Y))
 }
 func (g Grid) SortBy(f func(i, j Point) bool) (res SortedGrid) {
 	res = make(SortedGrid, len(g))
@@ -55,22 +54,22 @@ func (g SortedGrid) Len() int {
 }
 
 func (g SortedGrid) SplitHalves() (SortedGrid, SortedGrid) {
-	return SplitHalves(g)
-
+	h1, h2 := SplitHalves(g)
+	return h1, h2
 }
-func (g SortedGrid) lastPoint() Point {
+func (g SortedGrid) lastPoint() *Point {
 	return g[len(g)-1]
 }
-func (sg SortedGrid) ClosestPair() PointPair {
-	if len(sg) <= 3 {
-		return ClosestPairBasicCase(sg)
+func ClosestPair(sgx SortedGrid, sgy SortedGrid) PointPair {
+	if len(sgx) <= 3 {
+		return ClosestPairBasicCase(sgx)
 	}
-	lx, rx := sg.SplitHalves()
-	l := lx.ClosestPair()
-	r := rx.ClosestPair()
+	lx, rx := sgx.SplitHalves()
+	l := ClosestPair(lx, Grid(lx).SortBy(Y))
+	r := ClosestPair(rx, Grid(rx).SortBy(Y))
 	bp := BestPair(l, r)
 	minDist := bp.dist()
-	s := ClosestSplitPair(sg, Grid(sg).SortBy(Y), minDist)
+	s := ClosestSplitPair(sgx, sgy, minDist)
 	if s == nil {
 		return bp
 	}
