@@ -65,8 +65,8 @@ func ClosestPair(sgx Grid, sgy Grid) PointPair {
 		return ClosestPairBasicCase(sgx)
 	}
 	lx, rx := sgx.SplitHalves()
-	l := ClosestPair(lx, Grid(lx).SortBy(Y))
-	r := ClosestPair(rx, Grid(rx).SortBy(Y))
+	l := ClosestPair(lx, lx.SortBy(Y))
+	r := ClosestPair(rx, rx.SortBy(Y))
 	bp := BestPair(l, r)
 	minDist := bp.dist()
 	s := ClosestSplitPair(sgx, sgy, minDist)
