@@ -22,18 +22,18 @@ func (pp PointPair) is(p1, p2 Point) bool {
 }
 
 type Grid []*Point
-type SortedGrid Grid
+
 type GridSort struct {
 	g    Grid
-	less func(i, j Point) bool
+	less func(i, j *Point) bool
 }
 
 func (gs GridSort) Len() int           { return len(gs.g) }
 func (gs GridSort) Swap(i, j int)      { gs.g[i], gs.g[j] = gs.g[j], gs.g[i] }
-func (gs GridSort) Less(i, j int) bool { return gs.less(*gs.g[i], *gs.g[j]) }
+func (gs GridSort) Less(i, j int) bool { return gs.less(gs.g[i], gs.g[j]) }
 
-func X(i, j Point) bool { return i.X < j.X }
-func Y(i, j Point) bool { return i.Y < j.Y }
+func X(i, j *Point) bool { return i.X < j.X }
+func Y(i, j *Point) bool { return i.Y < j.Y }
 
 type PointPair struct {
 	a, b *Point
@@ -42,25 +42,25 @@ type PointPair struct {
 func (g Grid) ClosestPair() PointPair {
 	return ClosestPair(g.SortBy(X), g.SortBy(Y))
 }
-func (g Grid) SortBy(f func(i, j Point) bool) (res SortedGrid) {
-	res = make(SortedGrid, len(g))
+func (g Grid) SortBy(f func(i, j *Point) bool) (res Grid) {
+	res = make(Grid, len(g))
 	copy(res, g)
-	sort.Sort(GridSort{Grid(res), f})
+	sort.Sort(GridSort{res, f})
 	return res
 }
 
-func (g SortedGrid) Len() int {
+func (g Grid) Len() int {
 	return len(g)
 }
 
-func (g SortedGrid) SplitHalves() (SortedGrid, SortedGrid) {
+func (g Grid) SplitHalves() (Grid, Grid) {
 	h1, h2 := SplitHalves(g)
 	return h1, h2
 }
-func (g SortedGrid) lastPoint() *Point {
+func (g Grid) lastPoint() *Point {
 	return g[len(g)-1]
 }
-func ClosestPair(sgx SortedGrid, sgy SortedGrid) PointPair {
+func ClosestPair(sgx Grid, sgy Grid) PointPair {
 	if len(sgx) <= 3 {
 		return ClosestPairBasicCase(sgx)
 	}
@@ -76,7 +76,7 @@ func ClosestPair(sgx SortedGrid, sgy SortedGrid) PointPair {
 	return BestPair(bp, *s)
 }
 
-func ClosestPairBasicCase(px SortedGrid) (res PointPair) {
+func ClosestPairBasicCase(px Grid) (res PointPair) {
 	minDist := math.MaxFloat64
 	for i, v := range px {
 		for j := 1; j+i < len(px); j++ {
@@ -90,13 +90,15 @@ func ClosestPairBasicCase(px SortedGrid) (res PointPair) {
 	}
 	return
 }
+
 func BestPair(p, q PointPair) (bp PointPair) {
 	if p.dist() <= q.dist() {
 		return p
 	}
 	return q
 }
-func ClosestSplitPair(px, py SortedGrid, minDist float64) (pp *PointPair) {
+
+func ClosestSplitPair(px, py Grid, minDist float64) (pp *PointPair) {
 	lx, _ := px.SplitHalves()
 	xMedian := lx.lastPoint().X
 	var sy Grid
