@@ -2,6 +2,7 @@ package closestpair
 
 import (
 	"math"
+	"sort"
 )
 
 type Point struct {
@@ -22,25 +23,37 @@ func (pp PointPair) is(pp2 PointPair) bool {
 
 type Grid []Point
 type SortedGrid Grid
+type GridSort struct {
+	g    Grid
+	less func(i, j Point) bool
+}
+
+func (gs GridSort) Len() int           { return len(gs.g) }
+func (gs GridSort) Swap(i, j int)      { gs.g[i], gs.g[j] = gs.g[j], gs.g[i] }
+func (gs GridSort) Less(i, j int) bool { return gs.less(gs.g[i], gs.g[j]) }
+
+func X(i, j Point) bool { return i.X < j.X }
+func Y(i, j Point) bool { return i.Y < j.Y }
+
 type PointPair struct {
 	a, b Point
 }
 
 func (g Grid) ClosestPair() PointPair {
-	return g.SortByX().ClosestPair()
+	return g.SortBy(X).ClosestPair()
 
 }
-func (g Grid) SortByX() SortedGrid {
-	return Mergesort(g, func(a, b Point) bool {
-		return a.X <= b.X
-	})
+func (g Grid) SortBy(f func(i, j Point) bool) (res SortedGrid) {
+	res = make(SortedGrid, len(g))
+	copy(res, g)
+	sort.Sort(GridSort{Grid(res), f})
+	return res
 }
 
-func (g SortedGrid) SortByY() SortedGrid {
-	return Mergesort(g, func(a, b Point) bool {
-		return a.Y <= b.Y
-	})
+func (g SortedGrid) Len() int {
+	return len(g)
 }
+
 func (g SortedGrid) SplitHalves() (SortedGrid, SortedGrid) {
 	return SplitHalves(g)
 
@@ -57,21 +70,22 @@ func (sg SortedGrid) ClosestPair() PointPair {
 	r := rx.ClosestPair()
 	bp := BestPair(l, r)
 	minDist := bp.dist()
-	s := ClosestSplitPair(sg, sg.SortByY(), minDist)
+	s := ClosestSplitPair(sg, Grid(sg).SortBy(Y), minDist)
 	if s == nil {
 		return bp
 	}
 	return BestPair(bp, *s)
 }
 
-func ClosestPairBasicCase(px SortedGrid) (pp PointPair) {
+func ClosestPairBasicCase(px SortedGrid) (res PointPair) {
 	minDist := math.MaxFloat64
 	for i, v := range px {
 		for j := 1; j+i < len(px); j++ {
 			w := px[i+j]
-			if v.dist(w) < minDist {
-				minDist = v.dist(w)
-				pp = PointPair{v, w}
+			pp := PointPair{v, w}
+			if pp.dist() < minDist {
+				minDist = pp.dist()
+				res = pp
 			}
 		}
 	}
