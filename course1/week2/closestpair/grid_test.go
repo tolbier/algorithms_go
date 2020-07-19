@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tolbier/algorithms_go/course1/week2/closestpair/model"
 )
 
 func Test_Closest_Pair(t *testing.T) {
@@ -19,7 +20,7 @@ func Test_Closest_Pair(t *testing.T) {
 	}
 	p := grid.ClosestPair() //return a PointPair
 	assert.True(t,
-		p.is(Point{1, 8}, Point{1, 8.1}))
+		p.Is(model.Point{1, 8}, model.Point{1, 8.1}))
 }
 func Test_Closest_Pair2(t *testing.T) {
 	grid := Grid{
@@ -33,5 +34,5 @@ func Test_Closest_Pair2(t *testing.T) {
 	}
 	p := grid.ClosestPair()
 	assert.True(t,
-		p.is(Point{1, 9.9}, Point{1, 10}))
+		p.Is(model.Point{1, 9.9}, model.Point{1, 10}))
 }
