@@ -1,13 +1,25 @@
 package model
 
 type PointPair struct {
-	A, B *Point
+	a, b *Point
 }
 
-func (pp PointPair) Dist() float64 {
-	return pp.A.Dist(pp.B)
+func NewPointPair(a, b *Point) *PointPair {
+	return &PointPair{
+		a: a,
+		b: b,
+	}
+}
+func (pp *PointPair) Dist() float64 {
+	return pp.a.Dist(pp.b)
 }
 
-func (pp PointPair) Is(p1, p2 Point) bool {
-	return (*pp.A == p1 && *pp.B == p2) || (*pp.A == p2 && *pp.B == p2)
+func (pp *PointPair) Is(p1, p2 Point) bool {
+	return (*pp.a == p1 && *pp.b == p2) || (*pp.a == p2 && *pp.b == p2)
+}
+func (pp *PointPair) BestPair(pq *PointPair) (bp *PointPair) {
+	if pq == nil || pp.Dist() <= pq.Dist() {
+		return pp
+	}
+	return pq
 }

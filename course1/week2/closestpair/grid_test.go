@@ -25,10 +25,10 @@ func Test_Closest_Pair(t *testing.T) {
 func Test_Closest_Pair2(t *testing.T) {
 	grid := Grid{
 		{1, 2},
+		{1, 9.9},
 		{1, 4},
 		{1, 6},
 		{1, 8},
-		{1, 9.9},
 		{1, 10},
 		{1, 12},
 	}
