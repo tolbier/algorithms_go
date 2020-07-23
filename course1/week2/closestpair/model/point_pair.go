@@ -15,7 +15,7 @@ func (pp *PointPair) Dist() float64 {
 }
 
 func (pp *PointPair) Is(p1, p2 Point) bool {
-	return (*pp.a == p1 && *pp.b == p2) || (*pp.a == p2 && *pp.b == p2)
+	return (*pp.a == p1 && *pp.b == p2) || (*pp.a == p2 && *pp.b == p1)
 }
 func (pp *PointPair) BestPair(pq *PointPair) (bp *PointPair) {
 	if pq == nil || pp.Dist() <= pq.Dist() {

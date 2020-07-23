@@ -7,45 +7,36 @@ import (
 	"github.com/tolbier/algorithms_go/lib/testcases"
 )
 
+const testcasesDir = "course1/week2/closestpair/tests/testcases/"
+
 func main() {
-	test1()
-	test2()
+	generate_test(1, 2)
+	generate_test(2, 4)
+	generate_test(3, 8)
+	generate_test(4, 16)
+	generate_test(5, 32)
+	generate_test(6, 64)
+	generate_test(7, 128)
+	generate_test(8, 256)
+	generate_test(9, 512)
 }
 
-func test1() {
-	testcases.WriteFile("course1/week2/closestpair/tests/testcases/input_1_9.txt", func(file *os.File) (err error) {
-		fmt.Fprintln(file, "1 1")
-		fmt.Fprintln(file, "1 3")
-		fmt.Fprintln(file, "1 5")
-		fmt.Fprintln(file, "1 7")
-		fmt.Fprintln(file, "2 1")
-		fmt.Fprintln(file, "2 3")
-		fmt.Fprintln(file, "2 5")
-		fmt.Fprintln(file, "2 7")
-		fmt.Fprintln(file, "1 2.7")
-		return
-	})
-	testcases.WriteFile("course1/week2/closestpair/tests/testcases/output_1_9.txt", func(file *os.File) (err error) {
-		fmt.Fprintln(file, "1 2.7")
-		fmt.Fprintln(file, "1 3")
-		return
-	})
-}
-func test2() {
-	testcases.WriteFile("course1/week2/closestpair/tests/testcases/input_2_9.txt", func(file *os.File) (err error) {
-		for x := 0; x < 1000; x++ {
-			for y := 0; y < 1000; y++ {
+func generate_test(id int, n int) {
+	inputFileName := fmt.Sprintf("%sinput_%d_%d.txt", testcasesDir, id, n)
+	outputFileName := fmt.Sprintf("%soutput_%d_%d.txt", testcasesDir, id, n)
+
+	testcases.WriteFile(inputFileName, func(file *os.File) (err error) {
+		for x := 0; x < n; x++ {
+			for y := 0; y < n; y++ {
 				fmt.Fprintf(file, "%6.2f %6.2f\n", float64(x), float64(y))
-
 			}
-
 		}
-		fmt.Fprintln(file, "123 122.7")
+		fmt.Fprintln(file, "1 0.7")
 		return
 	})
-	testcases.WriteFile("course1/week2/closestpair/tests/testcases/output_2_9.txt", func(file *os.File) (err error) {
-		fmt.Fprintln(file, "123 122.7")
-		fmt.Fprintln(file, "123 123")
+	testcases.WriteFile(outputFileName, func(file *os.File) (err error) {
+		fmt.Fprintln(file, "1 0.7")
+		fmt.Fprintln(file, "1 1")
 		return
 	})
 }
