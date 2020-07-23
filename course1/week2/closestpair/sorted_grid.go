@@ -8,7 +8,6 @@ import (
 type SortedGrid struct {
 	gx, gy Grid
 	gMap   GridMap
-	ch     chan *model.PointPair
 }
 
 func NewSortedGrid(g Grid) *SortedGrid {
