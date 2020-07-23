@@ -23,3 +23,8 @@ func (g Grid) SortBy(f func(i, j *model.Point) bool) (res Grid) {
 func (g Grid) last() *model.Point {
 	return g[len(g)-1]
 }
+func (g Grid) SplitHalves() (h1, h2 []*model.Point) {
+	n := len(g)
+	hn := n / 2
+	return g[:hn], g[hn:]
+}

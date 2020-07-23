@@ -20,6 +20,15 @@ func ParseIntegerFile(filename string) (res []int) {
 	return res
 }
 
+func WriteFile(filename string, f func(*os.File) error) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	err = f(file)
+	return err
+}
 func ParseTextFile(filename string) (res []string) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -38,6 +47,7 @@ func ParseTextFile(filename string) (res []string) {
 	}
 	return res
 }
+
 func InputsOutputs(root string) (inputs []string, outputs []string) {
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {

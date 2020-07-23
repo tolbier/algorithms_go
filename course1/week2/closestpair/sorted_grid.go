@@ -8,6 +8,7 @@ import (
 type SortedGrid struct {
 	gx, gy Grid
 	gMap   GridMap
+	ch     chan *model.PointPair
 }
 
 func NewSortedGrid(g Grid) *SortedGrid {
@@ -39,7 +40,7 @@ func (sg *SortedGrid) Len() int {
 	return len(sg.gx)
 }
 func (sg *SortedGrid) SplitHalves() (sg1 *SortedGrid, sg2 *SortedGrid) {
-	hx1, hx2 := SplitHalves(sg.gx)
+	hx1, hx2 := sg.gx.SplitHalves()
 	sg1 = NewSortedGridFromGrids(hx1, sg.gy)
 	sg2 = NewSortedGridFromGrids(hx2, sg.gy)
 
@@ -49,13 +50,25 @@ func (sg *SortedGrid) SplitHalves() (sg1 *SortedGrid, sg2 *SortedGrid) {
 func (sg *SortedGrid) lastX() float64 {
 	return sg.gx.last().X
 }
+
 func (sg *SortedGrid) ClosestPair() *model.PointPair {
 	if sg.Len() <= 3 {
 		return sg.ClosestPairBasicCase()
 	}
 	lx, rx := sg.SplitHalves()
-	lp := lx.ClosestPair()
-	rp := rx.ClosestPair()
+
+	cl := make(chan *model.PointPair)
+	cr := make(chan *model.PointPair)
+
+	go func() {
+		cl <- lx.ClosestPair()
+	}()
+	go func() {
+		cr <- rx.ClosestPair()
+	}()
+
+	lp, rp := <-cl, <-cr
+
 	bp := lp.BestPair(rp)
 	s := sg.ClosestSplitPair(lx.lastX(), bp.Dist())
 
