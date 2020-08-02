@@ -19,12 +19,12 @@ func Test_QuickSort_TestCases(t *testing.T) {
 }
 
 func ThreeQuickSorts(inputInts []int) (res []int) {
-	slc := make([]int, len(inputInts))
+	slc := make(integers, len(inputInts))
 	copy(slc, inputInts)
-	res = append(res, QuickSort(slc, NewFirstPivoter()))
+	res = append(res, slc.QuickSort(NewFirstPivoter()))
 	copy(slc, inputInts)
-	res = append(res, QuickSort(slc, NewLastPivoter()))
+	res = append(res, slc.QuickSort(NewLastPivoter()))
 	copy(slc, inputInts)
-	res = append(res, QuickSort(slc, NewMedianOfThreePivoter()))
+	res = append(res, slc.QuickSort(NewMedianOfThreePivoter()))
 	return
 }
