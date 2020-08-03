@@ -1,4 +1,4 @@
-package quicksort
+package pivoter
 
 import (
 	"sort"
